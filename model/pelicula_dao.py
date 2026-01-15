@@ -6,10 +6,11 @@ def crear_tabla():
 
     sql = '''
     CREATE TABLE almacen(
-        id_product INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_product INTEGER,
         nombre VARCHAR(100),
-        precio NUMERIC(10, 2),
-        stock INTEGER,
+        precio INTEGER(100),
+        stock INTEGER(100),
+        PRIMARY KEY(id_product AUTOINCREMENT)
     )'''
     try:
         conexion.cursor.execute(sql)
@@ -27,7 +28,7 @@ def crear_tabla():
 def borrar_tabla():
     conexion = ConexionDB()
 
-    sql = 'DROP TABLE IF EXISTS almacen'
+    sql = 'DROP TABLE almacen'
     try:
         conexion.cursor.execute(sql)
         conexion.cerrar()
@@ -47,15 +48,14 @@ class Almacen:
         self.stock = stock
 
     def __str__(self):
-        return f'Pelicila[{self.nombre}, {self.precio}, {self.stock}]'
+        return f'Producto [{self.nombre}, {self.precio}, {self.stock}]'
 
-def guadar(product):  # Renombra a guardar en import
+def guardar(product):
     conexion = ConexionDB()
     sql = '''INSERT INTO almacen (nombre, precio, stock) 
-             VALUES (?, ?, ?)'''  # ✅ Parámetros seguros
+            VALUES (?, ?, ?)''' # ✅ Parámetros seguros
     try:
         conexion.cursor.execute(sql, (product.nombre, product.precio, product.stock))
-        conexion.commit()
         conexion.cerrar()
     except Exception as e:
         conexion.cerrar()
@@ -81,11 +81,10 @@ def listar():
 def editar(product, id_product):
     conexion = ConexionDB()
     sql = '''UPDATE almacen 
-             SET nombre = ?, precio = ?, stock = ? 
-             WHERE id_product = ?'''  # ✅ Campos correctos + parámetros
+            SET nombre = ?, precio = ?, stock = ? 
+            WHERE id_product = ?'''  # ✅ Campos correctos + parámetros
     try:
         conexion.cursor.execute(sql, (product.nombre, product.precio, product.stock, id_product))
-        conexion.commit()
         conexion.cerrar()
     except Exception as e:
         conexion.cerrar()
@@ -96,7 +95,6 @@ def eliminar(id_product):
     sql = 'DELETE FROM almacen WHERE id_product = ?'  # ✅ Parámetro seguro
     try:
         conexion.cursor.execute(sql, (id_product,))
-        conexion.commit()
         conexion.cerrar()
     except Exception as e:
         conexion.cerrar()
