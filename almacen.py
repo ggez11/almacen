@@ -1,13 +1,11 @@
 import tkinter as tk
-from client.gui_app import Frame, barra_menu
+from client.gui_app import Frame
 
 def main():
     root = tk.Tk()
     root.title('Sistema de Almacen')
     root.iconbitmap('img/cp-logo.ico')
     root.resizable(0,0)
-
-    barra_menu(root)
 
     app = Frame(root = root)
     

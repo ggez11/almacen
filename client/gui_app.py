@@ -3,21 +3,6 @@ from tkinter import ttk, messagebox
 from model.pelicula_dao import crear_tabla, borrar_tabla
 from model.pelicula_dao import Almacen, guardar, listar, editar, eliminar
 
-def barra_menu(root):
-    barra_menu = tk.Menu(root)
-    root.config(menu=barra_menu, width=300, height = 300)
-
-    menu_inicio = tk.Menu(barra_menu, tearoff = 0)
-    barra_menu.add_cascade(label ='Inicio', menu = menu_inicio)
-
-    menu_inicio.add_command(label='Crear Tabla', command=crear_tabla)
-    menu_inicio.add_command(label='Eliminar Tabla', command=borrar_tabla)
-    menu_inicio.add_command(label='Salir', command = root.destroy)
-
-    barra_menu.add_cascade(label='Consultas')
-    barra_menu.add_cascade(label='Configuracion')
-    barra_menu.add_cascade(label='Ayuda')
-
 class Frame(tk.Frame):
 
     def __init__(self, root = None):
@@ -29,9 +14,27 @@ class Frame(tk.Frame):
 
         self.id_product = None
 
+        self.barra_menu(self.root)
         self.campos_product()
         self.tabla_producto()
         self.desabilitar_campos()
+
+    def barra_menu(self, root):
+        barra_menu = tk.Menu(root)
+        root.config(menu=barra_menu, width=300, height = 300)
+
+        menu_inicio = tk.Menu(barra_menu, tearoff = 0)
+        barra_menu.add_cascade(label ='Inicio', menu = menu_inicio)
+
+        menu_inicio.add_command(label='Crear Tabla', command=crear_tabla)
+        menu_inicio.add_command(label='Eliminar Tabla', command=self.aux_actualizar_visual)
+        menu_inicio.add_command(label='Salir', command = root.destroy)
+        barra_menu.add_separator()
+        barra_menu.add_cascade(label='Consultas')
+        barra_menu.add_separator()
+        barra_menu.add_cascade(label='Configuracion')
+        barra_menu.add_separator()
+        barra_menu.add_cascade(label='Ayuda')
 
     def campos_product(self): #primer paso de luis: cambiar los labels
         # Labels de cada campo
@@ -71,14 +74,14 @@ class Frame(tk.Frame):
         # Botones Nuevo
         self.boton_nuevo = tk.Button(self, text="Nuevo", command = self.habilitar_campos)
         self.boton_nuevo.config(width=20, font=('Calibri', 12, 'bold'),
-                                fg='#DAD5D6', bg='#158645', 
+                                fg='white', bg='#158645', 
                                 cursor='hand2', activebackground='#35BD6F')
         self.boton_nuevo.grid(row=3, column=0, padx=10, pady=10)
 
         # Botones Guardar
         self.boton_guardar = tk.Button(self, text="Guardar", command = self.guardar_datos)
         self.boton_guardar.config(width=20, font=('Calibri', 12, 'bold'),
-                                  fg='#DAD5D6', bg='#1658A2',
+                                  fg='white', bg='#1658A2',
                                   cursor='hand2', activebackground='#3586DF')
         self.boton_guardar.grid(row=3, column=1, padx=10, pady=10)
 
@@ -86,11 +89,20 @@ class Frame(tk.Frame):
         self.boton_cancelar = tk.Button(
             self, text="Cancelar", command=self.desabilitar_campos)
         self.boton_cancelar.config(width=20, font=('Calibri', 12, 'bold'),
-                                   fg='#DAD5D6', bg='#BD152E',
+                                   fg='white', bg='#BD152E',
                                    cursor='hand2', activebackground='#E15370')
         self.boton_cancelar.grid(row=3, column=2, padx=10, pady=10)
 
     def habilitar_campos(self):
+        if (self.lista_product == False):
+            titulo = 'Base de datos'
+            mensaje = '¿Quieres crear la base de datos?'
+            ask = messagebox.askyesno(titulo, mensaje)
+            if (ask == True):
+                crear_tabla()
+                self.tabla_producto()
+                self.habilitar_campos()
+            return
         self.mi_nombre.set('')
         self.mi_precio.set('')
         self.mi_stock.set('')
@@ -101,6 +113,9 @@ class Frame(tk.Frame):
 
         self.boton_guardar.config(state='normal')
         self.boton_cancelar.config(state='normal')
+
+        self.boton_editar.config(state='disabled')
+        self.boton_eliminar.config(state='disabled')
 
     def desabilitar_campos(self):
         self.id_product = None
@@ -115,7 +130,10 @@ class Frame(tk.Frame):
 
         self.boton_guardar.config(state='disabled')
         self.boton_cancelar.config(state='disabled')
-    
+
+        self.boton_editar.config(state='normal')
+        self.boton_eliminar.config(state='normal')
+
     def guardar_datos(self):
 
         self.product = Almacen(
@@ -134,62 +152,81 @@ class Frame(tk.Frame):
         self.desabilitar_campos()
 
     def tabla_producto(self):
-
-        #Recuperar la lista de peliculas
         self.lista_product = listar()
-        self.lista_product.reverse()
 
-        self.tabla  = ttk.Treeview(self,
-        column = ('Nombre', 'Precio', 'Stock'))
-        self.tabla.grid(row=4, column=0, columnspan=4, sticky='nse')
-            
-        # Scrollbar para la tabla si exede 10 registros
-        self.scroll = ttk.Scrollbar(self,
-        orient = 'vertical', command = self.tabla.yview)
-        self.scroll.grid(row = 4, column = 4, sticky = 'nse')
-        self.tabla.configure(yscrollcommand = self.scroll.set)
+        if not (self.lista_product == False):
+            self.lista_product.reverse()
 
-        self.tabla.heading('#0', text='ID')
-        self.tabla.heading('#1', text='NOMBRE')
-        self.tabla.heading('#2', text='PRECIO')
-        self.tabla.heading('#3', text='STOCK')
+            self.tabla = ttk.Treeview(self,
+            column = ('Nombre', 'Precio', 'Stock'))
+            self.tabla.grid(row=4, column=0, columnspan=4, sticky='nse')
+                
+            # Scrollbar para la tabla si exede 10 registros
+            self.scroll = ttk.Scrollbar(self,
+            orient = 'vertical', command = self.tabla.yview)
+            self.scroll.grid(row = 4, column = 4, sticky = 'nse')
+            self.tabla.configure(yscrollcommand = self.scroll.set)
 
-        # Iterar la lista de peliculas
-        for p in self.lista_product:
-            self.tabla.insert('',0, text=p[0], 
-            values = (p[1], p[2], p[3]))
+            self.tabla.heading('#0', text='ID')
+            self.tabla.heading('#1', text='NOMBRE')
+            self.tabla.heading('#2', text='PRECIO')
+            self.tabla.heading('#3', text='STOCK')
 
-        # Botones Editar
-        self.boton_editar = tk.Button(self, text="Editar", command = self.editar_datos)
-        self.boton_editar.config(width=20, font=('Calibri', 12, 'bold'),
-                                fg='#DAD5D6', bg='#158645',
-                                cursor='hand2', activebackground='#35BD6F')
-        self.boton_editar.grid(row=5, column=0, padx=10, pady=10)
+            # Iterar la lista de peliculas
+            for p in self.lista_product:
+                self.tabla.insert('',0, text=p[0], 
+                values = (p[1], p[2], p[3]))
 
-        # Botones Eliminar
-        self.boton_eliminar = tk.Button(self, text="Eliminar", command = self.eliminar_datos)
-        self.boton_eliminar.config(width=20, font=('Calibri', 12, 'bold'),
-                                   fg='#DAD5D6', bg='#BD152E',
-                                   cursor='hand2', activebackground='#E15370')
-        self.boton_eliminar.grid(row=5, column=1, padx=10, pady=10)
+            # Botones Editar
+            self.boton_editar = tk.Button(self, text="Editar", command = self.editar_datos)
+            self.boton_editar.config(width=20, font=('Calibri', 12, 'bold'),
+                                    fg='white', bg='#158645',
+                                    cursor='hand2', activebackground='#35BD6F')
+            self.boton_editar.grid(row=5, column=0, padx=10, pady=10)
+
+            # Botones Eliminar
+            self.boton_eliminar = tk.Button(self, text="Eliminar", command = self.eliminar_datos)
+            self.boton_eliminar.config(width=20, font=('Calibri', 12, 'bold'),
+                                       fg='white', bg='#BD152E',
+                                       cursor='hand2', activebackground='#E15370')
+            self.boton_eliminar.grid(row=5, column=1, padx=10, pady=10)
+        else:
+            return
     
+    def aux_actualizar_visual(self):
+        borrar_tabla()
+        self.tabla.delete(*self.tabla.get_children())
+        self.lista_product = False
+        self.id_product = None
+        self.boton_guardar.config(state='disabled')
+        self.boton_cancelar.config(state='disabled')
+        self.boton_editar.config(state='disabled')
+        self.boton_eliminar.config(state='disabled')
 
     def editar_datos(self):
         try:
-            self.id_product = self.tabla.item(self.tabla.selection())['text']
-            self.nombre_product = self.tabla.item(
-                self.tabla.selection())['values'][0]
-            self.precio_product = self.tabla.item(
-                self.tabla.selection())['values'][1]
-            self.stock_product = self.tabla.item(
-                self.tabla.selection())['values'][2]
-            
-            self.habilitar_campos()
+            seleccionado = self.tabla.selection()
 
-            self.entry_nombre.insert(0, self.nombre_product)
-            self.entry_precio.insert(0, self.precio_product)
-            self.entry_stock.insert(0, self.stock_product)
-            
+            if seleccionado:
+                nombre = seleccionado['values'][0]
+                precio = seleccionado['values'][1]
+                stock = seleccionado['values'][2]
+
+                nombre_detalles = self.tabla.item(nombre)
+                precio_detalles = self.tabla.item(precio)
+                stock_detalles = self.tabla.item(stock)
+
+                self.nombre_product = nombre_detalles.get('text')
+                self.precio_product = precio_detalles.get('text')
+                self.stock_product = stock_detalles.get('text')
+
+                self.habilitar_campos()
+
+                self.entry_nombre.insert(0, self.nombre_product)
+                self.entry_precio.insert(0, self.precio_product)
+                self.entry_stock.insert(0, self.stock_product)
+            else:
+                raise Exception()
         except:
             titulo = 'Edición de datos'
             mensaje = 'No ha seleccionado nigun registro'
@@ -197,11 +234,17 @@ class Frame(tk.Frame):
 
     def eliminar_datos(self):
         try:
-            self.id_product = self.tabla.item(self.tabla.selection())['text']
-            eliminar(self.id_product)
+            seleccionado = self.tabla.selection()
 
-            self.tabla_producto()
-            self.id_product = None
+            if seleccionado:
+                item_id = seleccionado[0]
+                item_detalles = self.tabla.item(item_id)
+                idd = item_detalles.get('text')
+
+                eliminar(idd)
+                self.tabla_producto()
+            else:
+                raise Exception()
         except:
             titulo = 'Eliminar un Registro'
             mensaje = 'No ha seleccionado nigun registro'

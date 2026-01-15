@@ -7,5 +7,5 @@ class ConexionDB:
         self.cursor = self.conexion.cursor()
 
     def cerrar(self):
-        #self.conexion.commit()
+        self.conexion.commit()
         self.conexion.close()

@@ -5,16 +5,15 @@ def crear_tabla():
     conexion = ConexionDB()
 
     sql = '''
-    CREATE TABLE almacen(
+    CREATE TABLE IF NOT EXISTS almacen(
         id_product INTEGER,
         nombre VARCHAR(100),
-        precio INTEGER(100),
-        stock INTEGER(100),
+        precio INT,
+        stock INT,
         PRIMARY KEY(id_product AUTOINCREMENT)
     )'''
     try:
         conexion.cursor.execute(sql)
-        conexion.commit()
         conexion.cerrar()
         titulo = 'Crear Registro'
         mensaje = 'Se creo la tabla en la base datos'
@@ -35,6 +34,7 @@ def borrar_tabla():
         titulo = 'Borrar Registro'
         mensaje = 'La tabla de la base de datos se borro con éxito'
         messagebox.showinfo(titulo, mensaje)
+        return 'ASd'
     except:
         titulo = 'Borrar Registro'
         mensaje = 'No hay tabla para borrar'
@@ -52,10 +52,10 @@ class Almacen:
 
 def guardar(product):
     conexion = ConexionDB()
-    sql = '''INSERT INTO almacen (nombre, precio, stock) 
-            VALUES (?, ?, ?)''' # ✅ Parámetros seguros
+    sql = f"""INSERT INTO almacen (nombre, precio, stock) 
+            VALUES ('{product.nombre}', '{product.precio}', '{product.stock}')""" # ✅ Parámetros seguros
     try:
-        conexion.cursor.execute(sql, (product.nombre, product.precio, product.stock))
+        conexion.cursor.execute(sql)
         conexion.cerrar()
     except Exception as e:
         conexion.cerrar()
@@ -72,31 +72,31 @@ def listar():
         lista_productos = conexion.cursor.fetchall()
         conexion.cerrar()
     except:
-        titulo = 'Conexion al Registro '
+        titulo = 'Conexion al Registro'
         mensaje = 'Crea la tabla en la Base de datos'
         messagebox.showwarning(titulo, mensaje)
-
+        return False
     return lista_productos
 
 def editar(product, id_product):
     conexion = ConexionDB()
-    sql = '''UPDATE almacen 
-            SET nombre = ?, precio = ?, stock = ? 
-            WHERE id_product = ?'''  # ✅ Campos correctos + parámetros
+    sql = f"""UPDATE almacen
+            SET nombre = '{product.nombre}', precio = '{product.precio}', stock = '{product.stock }'
+            WHERE id_product = '{id_product}' """  # ✅ Campos correctos + parámetros
     try:
-        conexion.cursor.execute(sql, (product.nombre, product.precio, product.stock, id_product))
+        conexion.cursor.execute(sql)
         conexion.cerrar()
-    except Exception as e:
+    except:
         conexion.cerrar()
-        messagebox.showerror('Error', f'Error al editar: {e}')
+        messagebox.showerror('Error', f'Error al editar')
 
 def eliminar(id_product):
     conexion = ConexionDB()
-    sql = 'DELETE FROM almacen WHERE id_product = ?'  # ✅ Parámetro seguro
+    sql = f"DELETE FROM almacen WHERE id_product = '{id_product}' "  # ✅ Parámetro seguro
     try:
-        conexion.cursor.execute(sql, (id_product,))
+        conexion.cursor.execute(sql)
         conexion.cerrar()
-    except Exception as e:
+    except:
         conexion.cerrar()
-        messagebox.showerror('Error', f'Error al eliminar: {e}')
+        messagebox.showerror('Error', f'Error al eliminar')
 #vito
