@@ -114,8 +114,9 @@ class Frame(tk.Frame):
         self.boton_guardar.config(state='normal')
         self.boton_cancelar.config(state='normal')
 
-        self.boton_editar.config(state='disabled')
-        self.boton_eliminar.config(state='disabled')
+        if not (self.lista_product == False):
+            self.boton_editar.config(state='disabled')
+            self.boton_eliminar.config(state='disabled')
 
     def desabilitar_campos(self):
         self.id_product = None
@@ -131,8 +132,9 @@ class Frame(tk.Frame):
         self.boton_guardar.config(state='disabled')
         self.boton_cancelar.config(state='disabled')
 
-        self.boton_editar.config(state='normal')
-        self.boton_eliminar.config(state='normal')
+        if not (self.lista_product == False):
+            self.boton_editar.config(state='normal')
+            self.boton_eliminar.config(state='normal')
 
     def guardar_datos(self):
 
