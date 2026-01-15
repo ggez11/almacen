@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from model.pelicula_dao import crear_tabla, borrar_tabla
-from model.pelicula_dao import Pelicula, guadar, listar, editar, eliminar
+from model.pelicula_dao import Almacen, guadar, listar, editar, eliminar
 
 def barra_menu(root):
     barra_menu = tk.Menu(root)
@@ -27,45 +27,46 @@ class Frame(tk.Frame):
         self.root = root
         self.pack()
 
-        self.id_pelicula = None
+        self.id_product = None
 
-        self.campos_pelicula()
+        self.campos_product()
+        self.tabla_producto()
         self.desabilitar_campos()
-        self.tabla_pelicilas()
 
-    def campos_pelicula(self):
+    def campos_product(self): #primer paso de luis: cambiar los labels
         # Labels de cada campo
         self.label_nombre = tk.Label(self, text = 'Nombre: ')
         self.label_nombre.config(font = ('Arial', 12, 'bold'))
         self.label_nombre.grid(row = 0, column = 0, padx = 10, pady = 10)
 
-        self.label_duracion = tk.Label(self, text='Duración: ')
-        self.label_duracion.config(font=('Arial', 12, 'bold'))
-        self.label_duracion.grid(row=1, column=0, padx=10, pady=10)
+        self.label_precio = tk.Label(self, text='Precio: ')
+        self.label_precio.config(font=('Arial', 12, 'bold'))
+        self.label_precio.grid(row=1, column=0, padx=10, pady=10)
 
-        self.label_genero = tk.Label(self, text='Genero: ')
-        self.label_genero.config(font=('Arial', 12, 'bold'))
-        self.label_genero.grid(row=2, column=0, padx=10, pady=10)
+        self.label_stock = tk.Label(self, text='Stock: ')
+        self.label_stock.config(font=('Arial', 12, 'bold'))
+        self.label_stock.grid(row=2, column=0, padx=10, pady=10)
 
-        # Entrys de cada campo
+        # Entrys de cada campo 
+        # segundo paso de luis: cambio en los entrys
         self.mi_nombre = tk.StringVar()
         self.entry_nombre = tk.Entry(self, textvariable = self.mi_nombre)
         self.entry_nombre.config(
             width=50, font=('Arial', 12))
         self.entry_nombre.grid(row=0, column=1, padx=10, pady=10, columnspan = 2)
 
-        self.mi_duracion = tk.StringVar()
-        self.entry_duracion = tk.Entry(self, textvariable=self.mi_duracion)
-        self.entry_duracion.config(
+        self.mi_precio = tk.StringVar()
+        self.entry_precio = tk.Entry(self, textvariable=self.mi_precio)
+        self.entry_precio.config(
             width=50, font=('Arial', 12))
-        self.entry_duracion.grid(
+        self.entry_precio.grid(
             row=1, column=1, padx=10, pady=10, columnspan=2)
 
-        self.mi_genero = tk.StringVar()
-        self.entry_genero = tk.Entry(self, textvariable=self.mi_genero)
-        self.entry_genero.config(
+        self.mi_stock = tk.StringVar()
+        self.entry_stock = tk.Entry(self, textvariable=self.mi_stock)
+        self.entry_stock.config(
             width=50, font=('Arial', 12))
-        self.entry_genero.grid(row=2, column=1, padx=10, pady=10, columnspan=2)
+        self.entry_stock.grid(row=2, column=1, padx=10, pady=10, columnspan=2)
 
         # Botones Nuevo
         self.boton_nuevo = tk.Button(self, text="Nuevo", command = self.habilitar_campos)
@@ -91,57 +92,57 @@ class Frame(tk.Frame):
 
     def habilitar_campos(self):
         self.mi_nombre.set('')
-        self.mi_duracion.set('')
-        self.mi_genero.set('')
+        self.mi_precio.set('')
+        self.mi_stock.set('')
 
         self.entry_nombre.config(state='normal')
-        self.entry_duracion.config(state='normal')
-        self.entry_genero.config(state='normal')
+        self.entry_precio.config(state='normal')
+        self.entry_stock.config(state='normal')
 
         self.boton_guardar.config(state='normal')
         self.boton_cancelar.config(state='normal')
 
     def desabilitar_campos(self):
-        self.id_pelicula = None
+        self.id_product = None
         
         self.mi_nombre.set('')
-        self.mi_duracion.set('')
-        self.mi_genero.set('')
+        self.mi_precio.set('')
+        self.mi_stock.set('')
 
         self.entry_nombre.config(state='disabled')
-        self.entry_duracion.config(state='disabled')
-        self.entry_genero.config(state='disabled')
+        self.entry_precio.config(state='disabled')
+        self.entry_stock.config(state='disabled')
 
         self.boton_guardar.config(state='disabled')
         self.boton_cancelar.config(state='disabled')
     
     def guardar_datos(self):
 
-        self.pelicula = Pelicula(
+        self.product = Almacen(
             self.mi_nombre.get(),
-            self.mi_duracion.get(),
-            self.mi_genero.get(),
+            self.mi_precio.get(),
+            self.mi_stock.get(),
         )
 
-        if self.id_pelicula == None:
-            guadar(self.pelicula)
+        if self.id_product == None:
+            guadar(self.product)
         else:
-            editar(self.pelicula, self.id_pelicula)
+            editar(self.product, self.id_product)
 
-        self.tabla_pelicilas()
+        self.tabla_producto()
 
         self.desabilitar_campos()
 
-    def tabla_pelicilas(self):
-        #Recuperar la lista de peliculas
-        self.lista_peliculas = listar()
-        self.lista_peliculas.reverse()
+    def tabla_producto(self):
 
+        #Recuperar la lista de peliculas
+        self.lista_product = listar()
+        self.lista_product.reverse()
 
         self.tabla  = ttk.Treeview(self,
-        column = ('Nombre', 'Duracion', 'Genero'))
+        column = ('Nombre', 'Precio', 'Stock'))
         self.tabla.grid(row=4, column=0, columnspan=4, sticky='nse')
-
+            
         # Scrollbar para la tabla si exede 10 registros
         self.scroll = ttk.Scrollbar(self,
         orient = 'vertical', command = self.tabla.yview)
@@ -150,11 +151,11 @@ class Frame(tk.Frame):
 
         self.tabla.heading('#0', text='ID')
         self.tabla.heading('#1', text='NOMBRE')
-        self.tabla.heading('#2', text='DURACIÓN')
-        self.tabla.heading('#3', text='GENERO')
+        self.tabla.heading('#2', text='PRECIO')
+        self.tabla.heading('#3', text='STOCK')
 
         # Iterar la lista de peliculas
-        for p in self.lista_peliculas:
+        for p in self.lista_product:
             self.tabla.insert('',0, text=p[0], 
             values = (p[1], p[2], p[3]))
 
@@ -171,22 +172,23 @@ class Frame(tk.Frame):
                                    fg='#DAD5D6', bg='#BD152E',
                                    cursor='hand2', activebackground='#E15370')
         self.boton_eliminar.grid(row=5, column=1, padx=10, pady=10)
+    
 
     def editar_datos(self):
         try:
-            self.id_pelicula = self.tabla.item(self.tabla.selection())['text']
-            self.nombre_pelicula = self.tabla.item(
+            self.id_product = self.tabla.item(self.tabla.selection())['text']
+            self.nombre_product = self.tabla.item(
                 self.tabla.selection())['values'][0]
-            self.duracion_pelicula = self.tabla.item(
+            self.precio_product = self.tabla.item(
                 self.tabla.selection())['values'][1]
-            self.genero_pelicula = self.tabla.item(
+            self.stock_product = self.tabla.item(
                 self.tabla.selection())['values'][2]
             
             self.habilitar_campos()
 
-            self.entry_nombre.insert(0, self.nombre_pelicula)
-            self.entry_duracion.insert(0, self.duracion_pelicula)
-            self.entry_genero.insert(0, self.genero_pelicula)
+            self.entry_nombre.insert(0, self.nombre_product)
+            self.entry_precio.insert(0, self.precio_product)
+            self.entry_stock.insert(0, self.stock_product)
             
         except:
             titulo = 'Edición de datos'
@@ -195,11 +197,11 @@ class Frame(tk.Frame):
 
     def eliminar_datos(self):
         try:
-            self.id_pelicula = self.tabla.item(self.tabla.selection())['text']
-            eliminar(self.id_pelicula)
+            self.id_product = self.tabla.item(self.tabla.selection())['text']
+            eliminar(self.id_product)
 
-            self.tabla_pelicilas()
-            self.id_pelicula = None
+            self.tabla_producto()
+            self.id_product = None
         except:
             titulo = 'Eliminar un Registro'
             mensaje = 'No ha seleccionado nigun registro'

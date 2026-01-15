@@ -5,15 +5,15 @@ def crear_tabla():
     conexion = ConexionDB()
 
     sql = '''
-    CREATE TABLE peliculas(
-        id_pelicula INTEGER,
+    CREATE TABLE almacen(
+        id_product INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre VARCHAR(100),
-        duracion VARCHAR(10),
-        genero VARCHAR(100),
-        PRIMARY KEY(id_pelicula AUTOINCREMENT)
+        precio NUMERIC(10, 2),
+        stock INTEGER,
     )'''
     try:
         conexion.cursor.execute(sql)
+        conexion.commit()
         conexion.cerrar()
         titulo = 'Crear Registro'
         mensaje = 'Se creo la tabla en la base datos'
@@ -27,7 +27,7 @@ def crear_tabla():
 def borrar_tabla():
     conexion = ConexionDB()
 
-    sql = 'DROP TABLE peliculas'
+    sql = 'DROP TABLE IF EXISTS almacen'
     try:
         conexion.cursor.execute(sql)
         conexion.cerrar()
@@ -39,72 +39,66 @@ def borrar_tabla():
         mensaje = 'No hay tabla para borrar'
         messagebox.showerror(titulo, mensaje)
 
-class Pelicula:
-    def __init__(self, nombre, duracion, genero):
-        self.id_pelicula = None
+class Almacen:
+    def __init__(self, nombre, precio, stock):
+        self.id_product = None
         self.nombre = nombre
-        self.duracion = duracion
-        self.genero = genero
+        self.precio = precio
+        self.stock = stock
 
     def __str__(self):
-        return f'Pelicila[{self.nombre}, {self.duracion}, {self.genero}]'
+        return f'Pelicila[{self.nombre}, {self.precio}, {self.stock}]'
 
-def guadar(pelicula):
+def guadar(product):  # Renombra a guardar en import
     conexion = ConexionDB()
-
-    sql = f"""INSERT INTO peliculas (nombre, duracion, genero)
-    VALUES('{pelicula.nombre}', '{pelicula.duracion}', '{pelicula.genero}')"""
-
+    sql = '''INSERT INTO almacen (nombre, precio, stock) 
+             VALUES (?, ?, ?)'''  # ✅ Parámetros seguros
     try:
-        conexion.cursor.execute(sql)
+        conexion.cursor.execute(sql, (product.nombre, product.precio, product.stock))
+        conexion.commit()
         conexion.cerrar()
-    except:
-        titulo = 'Conexion al Registro'
-        mensaje = 'La tabla peliculas no esta creado en la base de datos'
-        messagebox.showerror(titulo, mensaje)
+    except Exception as e:
+        conexion.cerrar()
+        messagebox.showerror('Error', f'No se pudo guardar: {e}')
 
 def listar():
     conexion = ConexionDB()
 
-    lista_peliculas = []
-    sql = 'SELECT * FROM peliculas'
+    lista_productos = []
+    sql = 'SELECT * FROM almacen'
 
     try: 
         conexion.cursor.execute(sql)
-        lista_peliculas = conexion.cursor.fetchall()
+        lista_productos = conexion.cursor.fetchall()
         conexion.cerrar()
     except:
         titulo = 'Conexion al Registro '
         mensaje = 'Crea la tabla en la Base de datos'
         messagebox.showwarning(titulo, mensaje)
 
-    return lista_peliculas
+    return lista_productos
 
-def editar(pelicula, id_pelicula):
+def editar(product, id_product):
     conexion = ConexionDB()
-
-    sql = f"""UPDATE peliculas 
-    SET nombre = '{pelicula.nombre}', duracion = '{pelicula.duracion}',
-    genero = '{pelicula.genero}'
-    WHERE id_pelicula = {id_pelicula}"""
-
+    sql = '''UPDATE almacen 
+             SET nombre = ?, precio = ?, stock = ? 
+             WHERE id_product = ?'''  # ✅ Campos correctos + parámetros
     try:
-        conexion.cursor.execute(sql)
+        conexion.cursor.execute(sql, (product.nombre, product.precio, product.stock, id_product))
+        conexion.commit()
         conexion.cerrar()
+    except Exception as e:
+        conexion.cerrar()
+        messagebox.showerror('Error', f'Error al editar: {e}')
 
-    except:
-        titulo = 'Edición de datos'
-        mensaje = 'No se apodido editar este registro'
-        messagebox.showerror(titulo, mensaje)
-
-def eliminar(id_pelicula):
+def eliminar(id_product):
     conexion = ConexionDB()
-    sql = f'DELETE FROM peliculas WHERE id_pelicula = {id_pelicula}'
-
+    sql = 'DELETE FROM almacen WHERE id_product = ?'  # ✅ Parámetro seguro
     try:
-        conexion.cursor.execute(sql)
+        conexion.cursor.execute(sql, (id_product,))
+        conexion.commit()
         conexion.cerrar()
-    except:
-        titulo = 'Eliminar Datos'
-        mensaje = 'No se pudo eliminar el registro'
-        messagebox.showerror(titulo, mensaje)
+    except Exception as e:
+        conexion.cerrar()
+        messagebox.showerror('Error', f'Error al eliminar: {e}')
+#vito
