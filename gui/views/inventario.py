@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, Toplevel
 from database.queries import get_all_products, insert_product
-
+from ..widgets import EntryWithPlaceholder
 # --- CONFIGURACIÓN DE COLORES Y ESTILOS ---
 COLORS = {
     "bg_main": "#F3F4F6",       # Fondo general (Gris claro)
@@ -96,9 +96,21 @@ class InventarioView(tk.Frame):
         search_container.pack(side="left", ipady=5, ipadx=5)
         
         tk.Label(search_container, text="🔍", bg="white", fg=COLORS["text_gray"]).pack(side="left", padx=5)
-        entry_search = tk.Entry(search_container, bg="white", bd=0, font=FONT_BODY, width=30)
+        
+        #luis: converti el texto en un placeholder se puede usar en varias partes ya que es una clase
+        #entry_search = tk.Entry(search_container, bg="white", bd=0, font=FONT_BODY, width=30)
+        #entry_search.pack(side="left")
+        #entry_search.insert(0, "Buscar por SKU, Nombre...")
+        entry_search = EntryWithPlaceholder(
+            search_container, 
+            placeholder="Buscar por SKU, Nombre...",
+            bg="white", 
+            bd=0, 
+            font=FONT_BODY, 
+            width=30,
+            fg=COLORS["text_gray"]
+        )
         entry_search.pack(side="left")
-        entry_search.insert(0, "Buscar por SKU, Nombre...")
 
         # Botones de Acción (Export y Add)
         btn_add = tk.Button(top_frame, text="＋ Add Product", bg=COLORS["primary"], fg="white", 
