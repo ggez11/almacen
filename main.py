@@ -2,7 +2,6 @@ import tkinter as tk
 from gui.app import MainApp
 from database.connection import initialize_db
 
-# argenis 16/01: se agrego type hints globales 
 def main() -> None:
     """
     Función principal que inicializa la base de datos y la interfaz gráfica.
