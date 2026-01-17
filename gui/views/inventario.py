@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple, Any, Optional, Union
 
 # Importaciones locales
 from database.queries import get_all_products, insert_product
-from ..widgets import EntryWithPlaceholder
+from gui.components.widgets import EntryWithPlaceholder
 
 # --- CONFIGURACIÓN DE COLORES Y ESTILOS ---
 # Usamos un diccionario con tipos definidos para los colores
@@ -34,11 +34,6 @@ class InventarioView(tk.Frame):
         super().__init__(parent)
         self.configure(bg=COLORS["bg_main"])
 
-        # Atributos de instancia tipados
-        self.sidebar: tk.Frame = tk.Frame(self, bg=COLORS["bg_sidebar"], width=250)
-        self.sidebar.pack(side="left", fill="y")
-        self.sidebar.pack_propagate(False)
-
         self.main_area: tk.Frame = tk.Frame(self, bg=COLORS["bg_main"])
         self.main_area.pack(side="right", fill="both", expand=True)
 
@@ -48,46 +43,10 @@ class InventarioView(tk.Frame):
         self.scrollbar: Optional[ttk.Scrollbar] = None
 
         # Construir UI
-        self._construir_sidebar()
         self._construir_topbar()
         self._construir_lista_productos()
 
-    def _construir_sidebar(self) -> None:
-        frame_logo: tk.Frame = tk.Frame(self.sidebar, bg=COLORS["bg_sidebar"], pady=20)
-        frame_logo.pack(fill="x")
-        
-        tk.Label(frame_logo, text="📦 Nexus WMS", font=("Segoe UI", 16, "bold"), 
-                 bg=COLORS["bg_sidebar"], fg=COLORS["text_dark"]).pack()
-
-        # Lista de tuplas: (Icono, Texto, Es_Activo)
-        items: List[Tuple[str, str, bool]] = [
-            ("📊", "Dashboard", False),
-            ("📦", "Inventory", True),
-            ("📄", "Orders", False),
-            ("🚚", "Shipments", False),
-            ("📈", "Reports", False)
-        ]
-
-        for icon, text, is_active in items:
-            bg_color: str = COLORS["primary_light"] if is_active else COLORS["bg_sidebar"]
-            fg_color: str = COLORS["primary"] if is_active else COLORS["text_gray"]
-            font_style: Union[Tuple[str, int, str], Tuple[str, int]] = \
-                ("Segoe UI", 10, "bold") if is_active else ("Segoe UI", 10)
-            
-            item_frame: tk.Frame = tk.Frame(self.sidebar, bg=bg_color, height=45)
-            item_frame.pack(fill="x", padx=10, pady=2)
-            item_frame.pack_propagate(False)
-            
-            lbl_icon: tk.Label = tk.Label(item_frame, text=icon, bg=bg_color, fg=fg_color, font=("Arial", 12))
-            lbl_icon.pack(side="left", padx=(15, 10))
-            
-            lbl_text: tk.Label = tk.Label(item_frame, text=text, bg=bg_color, fg=fg_color, font=font_style)
-            lbl_text.pack(side="left")
-
-            if is_active:
-                tk.Frame(item_frame, bg=COLORS["primary"], width=4).pack(side="left", fill="y", before=lbl_icon)
-
-        user_frame: tk.Frame = tk.Frame(self.sidebar, bg=COLORS["bg_sidebar"], pady=20)
+        user_frame: tk.Frame = tk.Frame(self.main_area, bg=COLORS["bg_sidebar"], pady=20)
         user_frame.pack(side="bottom", fill="x")
         tk.Label(user_frame, text="👤", font=("Arial", 18), bg=COLORS["bg_sidebar"]).pack(side="left", padx=15)
         

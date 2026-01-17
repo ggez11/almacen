@@ -4,7 +4,7 @@ from typing import Dict, List, Any, Union
 
 # Importaciones del sistema
 from database.queries import get_all_products
-from ..widgets import EntryWithPlaceholder
+from gui.components.widgets import EntryWithPlaceholder
 
 # --- CONFIGURACIÓN DE ESTILOS (Tema Naranja - Ajustes) ---
 COLORS: Dict[str, str] = {
