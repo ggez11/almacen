@@ -2,19 +2,20 @@ import tkinter as tk
 from gui.app import MainApp
 from database.connection import initialize_db
 
-def main():
-    # 1. Inicializar Base de Datos y tablas si no existen
+# argenis 16/01: se agrego type hints globales 
+def main() -> None:
+    """
+    Función principal que inicializa la base de datos y la interfaz gráfica.
+    """
     initialize_db()
     
-    # 2. Configurar la ventana raíz
-    root = tk.Tk()
-    root.title("Sistema de Gestión de Almacén WMS")
+    root: tk.Tk = tk.Tk()
+    root.title("Almacen Unefista")
     root.geometry("1024x768")
     
-    # 3. Lanzar la aplicación principal
-    app = MainApp(root)
+    app: MainApp = MainApp(root)
     
     root.mainloop()
-
+        
 if __name__ == "__main__":
     main()

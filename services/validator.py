@@ -1,9 +1,11 @@
-def validate_number(value):
+from typing import Union
+
+def validate_number(value: Union[str, int, float]) -> bool:
     try:
-        val = int(value)
+        val: int = int(value)
         return val >= 0
-    except ValueError:
+    except (ValueError, TypeError):
         return False
 
-def validate_non_empty(text):
+def validate_non_empty(text: str) -> bool:
     return len(text.strip()) > 0

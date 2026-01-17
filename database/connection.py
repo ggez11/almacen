@@ -1,17 +1,27 @@
 import sqlite3
 import os
+from typing import Optional
 
-DB_PATH = os.path.join('data', 'almacen.db')
+# El path es una cadena constante
+DB_PATH: str = os.path.join('data', 'almacen.db')
 
-def get_connection():
+def get_connection() -> sqlite3.Connection:
+    """
+    Establece la conexión con la base de datos SQLite.
+    Asegura la existencia del directorio de datos.
+    """
     # Asegurar que el directorio data existe
     if not os.path.exists('data'):
         os.makedirs('data')
+    
     return sqlite3.connect(DB_PATH)
 
-def initialize_db():
-    conn = get_connection()
-    cursor = conn.cursor()
+def initialize_db() -> None:
+    """
+    Crea las tablas necesarias y el usuario administrador inicial.
+    """
+    conn: sqlite3.Connection = get_connection()
+    cursor: sqlite3.Cursor = conn.cursor()
     
     # Tabla Usuarios (Roles)
     cursor.execute('''
@@ -51,7 +61,6 @@ def initialize_db():
     ''')
 
     # Tabla Stock (Estados)
-    # Un producto puede tener stock en diferentes estados
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS stock (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -79,9 +88,15 @@ def initialize_db():
     
     # Crear usuario Admin por defecto si no existe
     cursor.execute("SELECT * FROM users WHERE username = 'admin'")
-    if not cursor.fetchone():
-        # En prod usar hashing, aqui texto plano por simplicidad segun requisitos
-        cursor.execute("INSERT INTO users (username, password, role) VALUES ('admin', 'admin', 'Administrador')")
+    # fetchone() puede devolver una tupla o None
+    admin_exists: Optional[tuple] = cursor.fetchone()
+    
+    if not admin_exists:
+        # En prod usar hashing, aquí texto plano por simplicidad
+        cursor.execute(
+            "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+            ('admin', 'admin', 'Administrador')
+        )
 
     conn.commit()
     conn.close()

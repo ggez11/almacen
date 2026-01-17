@@ -1,16 +1,25 @@
 import sqlite3
+from typing import List, Tuple, Any, Optional, Union, Iterable
 from .connection import get_connection
 
-def execute_query(query, params=(), fetch=False):
+# Tipo personalizado para los resultados de la DB
+# Puede ser una lista de tuplas (select), un entero (insert id) o None (error)
+QueryResult = Union[List[Tuple[Any, ...]], int, None]
+
+def execute_query(
+    query: str, 
+    params: Iterable[Any] = (), 
+    fetch: bool = False
+) -> QueryResult:
     conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute(query, params)
         if fetch:
-            result = cursor.fetchall()
+            result: List[Tuple[Any, ...]] = cursor.fetchall()
             return result
         conn.commit()
-        return cursor.lastrowid
+        return int(cursor.lastrowid) if cursor.lastrowid is not None else 0
     except sqlite3.Error as e:
         print(f"Error DB: {e}")
         return None
@@ -18,7 +27,7 @@ def execute_query(query, params=(), fetch=False):
         conn.close()
 
 # --- Productos ---
-def get_all_products():
+def get_all_products() -> List[Tuple[Any, ...]]:
     sql = """
     SELECT p.id, p.name, p.barcode, p.category, 
            coalesce(sum(s.quantity), 0) as total_stock, 
@@ -27,38 +36,54 @@ def get_all_products():
     LEFT JOIN stock s ON p.id = s.product_id
     GROUP BY p.id
     """
-    return execute_query(sql, fetch=True)
+    result = execute_query(sql, fetch=True)
+    # Casteamos el resultado para asegurar que el editor sepa que es una lista
+    return result if isinstance(result, list) else []
 
-def insert_product(data):
+def insert_product(data: Tuple[Any, ...]) -> Optional[int]:
     sql = '''INSERT INTO products (name, barcode, category, uom, location_aisle, location_shelf, location_level) 
              VALUES (?, ?, ?, ?, ?, ?, ?)'''
-    return execute_query(sql, data)
+    result = execute_query(sql, data)
+    return result if isinstance(result, int) else None
 
-def update_stock(product_id, state, quantity, operation='+'):
-    # Verificar si existe registro de stock para ese estado
+def update_stock(
+    product_id: int, 
+    state: str, 
+    quantity: int, 
+    operation: str = '+'
+) -> bool:
     check_sql = "SELECT id, quantity FROM stock WHERE product_id=? AND state=?"
     row = execute_query(check_sql, (product_id, state), fetch=True)
     
-    if not row:
-        if operation == '-': return False # No se puede restar lo que no existe
-        # Crear registro inicial
+    # Verificamos que sea una lista y tenga contenido
+    if not isinstance(row, list) or not row:
+        if operation == '-': return False
         sql = "INSERT INTO stock (product_id, state, quantity) VALUES (?, ?, ?)"
         execute_query(sql, (product_id, state, quantity))
     else:
-        stock_id, current_qty = row[0]
+        stock_id: int = row[0][0]
+        current_qty: int = row[0][1]
         new_qty = current_qty + quantity if operation == '+' else current_qty - quantity
+        
         if new_qty < 0: return False
+        
         sql = "UPDATE stock SET quantity=? WHERE id=?"
         execute_query(sql, (new_qty, stock_id))
     return True
 
 # --- Movimientos ---
-def insert_movement(product_id, user_id, move_type, concept, quantity):
+def insert_movement(
+    product_id: int, 
+    user_id: int, 
+    move_type: str, 
+    concept: str, 
+    quantity: int
+) -> None:
     sql = '''INSERT INTO movements (product_id, user_id, move_type, concept, quantity) 
              VALUES (?, ?, ?, ?, ?)'''
     execute_query(sql, (product_id, user_id, move_type, concept, quantity))
 
-def get_movements_history():
+def get_movements_history() -> List[Tuple[Any, ...]]:
     sql = '''
     SELECT m.timestamp, p.name, u.username, m.move_type, m.concept, m.quantity
     FROM movements m
@@ -66,10 +91,15 @@ def get_movements_history():
     JOIN users u ON m.user_id = u.id
     ORDER BY m.timestamp DESC
     '''
-    return execute_query(sql, fetch=True)
+    result = execute_query(sql, fetch=True)
+    return result if isinstance(result, list) else []
 
 # --- Usuarios ---
-def get_user_by_credentials(username, password):
+def get_user_by_credentials(username: str, password: str) -> Optional[Tuple[int, str, str]]:
     sql = "SELECT id, username, role FROM users WHERE username=? AND password=?"
     result = execute_query(sql, (username, password), fetch=True)
-    return result[0] if result else None
+    
+    if isinstance(result, list) and len(result) > 0:
+        # Retornamos la primera fila como tupla de (id, nombre, rol)
+        return result[0] # type: ignore
+    return None
