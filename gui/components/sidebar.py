@@ -41,8 +41,8 @@ class Sidebar(tk.Frame):
         opciones: List[Tuple[str, str, str]] = [
             ("Inventario", "Inventario", "📦"),
             ("Movimientos", "Movimientos", "⇆"),
-            ("Punto de Venta", "Envios", "🛒"),
-            ("Ajustes / Mermas", "Salidas", "📉")
+            ("Envios", "Envios", "🛒"),
+            ("Salidas", "Salidas", "📉")
         ]
 
         for text, key, icon in opciones:

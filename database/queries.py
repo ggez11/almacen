@@ -71,6 +71,32 @@ def update_stock(
         execute_query(sql, (new_qty, stock_id))
     return True
 
+def get_product_stock(product_id: int, state: str) -> int:
+    """
+    Obtiene la cantidad actual de un producto en un estado específico.
+    Si no existe el registro, retorna 0.
+    """
+    sql: str = "SELECT quantity FROM stock WHERE product_id=? AND state=?"
+    result: QueryResult = execute_query(sql, (product_id, state), fetch=True)
+    
+    if isinstance(result, list) and len(result) > 0:
+        # result[0][0] es el valor de la columna 'quantity'
+        return int(result[0][0])
+    
+    return 0
+
+def get_products_simple() -> List[Tuple[int, str]]:
+    """
+    Retorna una lista simplificada (id, nombre) para llenar selectores/comboboxes.
+    """
+    sql: str = "SELECT id, name FROM products ORDER BY name ASC"
+    result: QueryResult = execute_query(sql, fetch=True)
+    
+    # Casteamos para asegurar que el tipo de retorno sea el esperado
+    if isinstance(result, list):
+        return result  # type: ignore
+    return []
+    
 # --- Movimientos ---
 def insert_movement(
     product_id: int, 

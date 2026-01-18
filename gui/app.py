@@ -1,8 +1,13 @@
 import tkinter as tk
 from typing import Optional
 
-# Importaciones de vistas y componentes
+# Services
+from services.inv_manager import InventoryManager
+
+# Components
 from gui.components.sidebar import Sidebar
+
+# Vistas
 from gui.views.login import LoginView
 from gui.views.inventario import InventarioView
 from gui.views.movimientos import MovimientosView
@@ -16,6 +21,9 @@ class MainApp:
         
         self.root.geometry("1280x720")
         self.root.title("Nexus WMS")
+        
+        self.inv_manager: InventoryManager = InventoryManager()
+        self.current_user_id: int = 1
         
         self.show_login()
 
