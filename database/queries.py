@@ -129,3 +129,32 @@ def get_user_by_credentials(username: str, password: str) -> Optional[Tuple[int,
         # Retornamos la primera fila como tupla de (id, nombre, rol)
         return result[0] # type: ignore
     return None
+import sqlite3
+
+def delete_product(p_id: int) -> bool:
+    """Elimina un producto de la base de datos usando la tabla 'products'."""
+    sql = "DELETE FROM products WHERE id = ?"
+    # Usamos execute_query para aprovechar la conexión que ya tienen configurada
+    result = execute_query(sql, (p_id,))
+    return result is not None
+
+def update_product(data: tuple) -> bool:
+    """
+    Actualiza los datos en la tabla 'products'.
+    data debe ser: (nombre, barcode, categoria, ubicacion, id)
+    """
+    # Nota: Tu tabla usa location_aisle, location_shelf, etc. 
+    # Para simplificar, actualizaremos el nombre, barcode y categoría.
+    sql = """
+        UPDATE products 
+        SET name = ?, 
+            barcode = ?, 
+            category = ?
+        WHERE id = ?
+    """
+    # Ajustamos la data para que coincida con los 4 campos de arriba 
+    # (nombre, barcode, categoria, id)
+    filtered_data = (data[0], data[1], data[2], data[4])
+    
+    result = execute_query(sql, filtered_data)
+    return result is not None
