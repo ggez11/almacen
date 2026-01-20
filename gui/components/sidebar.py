@@ -1,3 +1,4 @@
+# gui/components/sidebar.py (VERSIÓN ACTUALIZADA)
 import tkinter as tk
 from typing import Dict, List, Tuple, Any, Callable
 
@@ -40,13 +41,22 @@ class Sidebar(tk.Frame):
         # ViewKey debe coincidir con los nombres en app.py -> show_view()
         opciones: List[Tuple[str, str, str]] = [
             ("Inventario", "Inventario", "📦"),
-            ("Movimientos", "Movimientos", "⇆"),
+            ("  Movimientos", "Movimientos", "⇆"),
             ("Envios", "Envios", "🛒"),
-            ("Salidas", "Salidas", "📉")
+            ("Salidas", "Salidas", "📉"),
+            ("---", "---", "---"),  # Separador
         ]
 
         for text, key, icon in opciones:
-            self._crear_boton_menu(menu_container, text, key, icon)
+            if text == "---":  # Separador
+                self._crear_separador(menu_container)
+            else:
+                self._crear_boton_menu(menu_container, text, key, icon)
+
+    def _crear_separador(self, parent: tk.Frame) -> None:
+        """Crea un separador visual en el menú."""
+        separator = tk.Frame(parent, bg="#E5E7EB", height=1)
+        separator.pack(fill="x", pady=10, padx=10)
 
     def _crear_boton_menu(self, parent: tk.Frame, text: str, key: str, icon: str) -> None:
         btn_frame: tk.Frame = tk.Frame(parent, bg=SIDEBAR_COLORS["bg"], height=50, cursor="hand2")
@@ -97,8 +107,10 @@ class Sidebar(tk.Frame):
         tk.Label(info, text="Admin User", font=("Segoe UI", 9, "bold"), bg=SIDEBAR_COLORS["bg"]).pack(anchor="w")
         
         # Botón Logout
-        tk.Label(row, text="🚪", font=("Arial", 12), bg=SIDEBAR_COLORS["bg"], 
-                 fg="red", cursor="hand2").pack(side="right")
+        logout_btn = tk.Label(row, text="🚪", font=("Arial", 12), bg=SIDEBAR_COLORS["bg"], 
+                 fg="red", cursor="hand2")
+        logout_btn.pack(side="right")
+        logout_btn.bind("<Button-1>", lambda e: self.controller.logout())
 
     def set_active(self, view_key: str) -> None:
         """Resalta el botón de la vista actual y apaga los demás."""

@@ -8,11 +8,11 @@ from services.inv_manager import InventoryManager
 from gui.components.sidebar import Sidebar
 
 # Vistas
-from gui.views.login import LoginView
-from gui.views.inventario import InventarioView
-from gui.views.movimientos import MovimientosView
-from gui.views.envios import EnviosView
-from gui.views.productos_salida import SalidasView 
+from views.login import LoginView
+from views.inventario import InventarioView
+from views.movimientos import MovimientosView
+from views.envios import EnviosView
+from views.salidas import SalidasView
 
 class MainApp:
     def __init__(self, root: tk.Tk) -> None:
@@ -39,6 +39,7 @@ class MainApp:
         self.current_frame = MainSystem(self.root, self)
         self.current_frame.pack(fill="both", expand=True)
 
+# En gui/app.py - Modificar la clase MainSystem
 class MainSystem(tk.Frame):
     def __init__(self, parent: tk.Widget, controller: MainApp) -> None:
         super().__init__(parent)
@@ -64,7 +65,6 @@ class MainSystem(tk.Frame):
             
         # 2. Instanciar nueva vista
         if view_name == "Inventario":
-            # Nota: InventarioView ya NO debe tener su sidebar interno
             view = InventarioView(self.view_container)
         elif view_name == "Movimientos":
             view = MovimientosView(self.view_container)
@@ -79,6 +79,3 @@ class MainSystem(tk.Frame):
         
         # 3. Actualizar estado visual del sidebar
         self.sidebar.set_active(view_name)
-
-    def logout(self) -> None:
-        self.controller.show_login()

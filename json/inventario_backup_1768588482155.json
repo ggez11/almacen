@@ -1,0 +1,78 @@
+{
+  "inventory": [
+    {
+      "id": "1764614593103",
+      "name": "salsa",
+      "barcode": "1234567890",
+      "size": "222 g",
+      "price": 2,
+      "stockType": "units",
+      "unitsPerContainer": 1,
+      "totalUnits": 5,
+      "initialStock": 5,
+      "image": ""
+    },
+    {
+      "id": "1764616851864",
+      "name": "aceite",
+      "barcode": "1234567891",
+      "size": "500 mL",
+      "price": 4,
+      "stockType": "units",
+      "unitsPerContainer": 1,
+      "totalUnits": 5,
+      "initialStock": 5,
+      "image": ""
+    }
+  ],
+  "sales": [
+    {
+      "id": "202512011359",
+      "date": "1/12/2025, 13:59:45",
+      "paymentMethod": "Biopago",
+      "items": [
+        {
+          "id": "1764611972985",
+          "name": "salsa",
+          "size": "397 g",
+          "price": 4,
+          "quantity": 2
+        }
+      ],
+      "total": 8,
+      "convertedTotal": 1880
+    },
+    {
+      "id": "202512011431",
+      "date": "1/12/2025, 14:31:31",
+      "paymentMethod": "Biopago",
+      "items": [
+        {
+          "id": "1764611972985",
+          "name": "salsa",
+          "size": "397 g",
+          "price": 4,
+          "quantity": 1
+        }
+      ],
+      "total": 4,
+      "convertedTotal": 940
+    }
+  ],
+  "settings": {
+    "pin": "0000",
+    "currency": "USD",
+    "convertTo": "BS",
+    "conversionRate": 255,
+    "storeName": "Market",
+    "stockWarning": 20,
+    "autoDeleteSales": "never",
+    "printerWidth": 55
+  },
+  "metadata": {
+    "exportado": "2026-01-16T18:34:42.152Z",
+    "version": "1.0",
+    "totalProductos": 2,
+    "totalVentas": 2
+  }
+}
