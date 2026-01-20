@@ -30,7 +30,7 @@ class Sidebar(tk.Frame):
         logo_frame: tk.Frame = tk.Frame(self, bg=SIDEBAR_COLORS["bg"], pady=30)
         logo_frame.pack(fill="x")
         
-        tk.Label(logo_frame, text="📦 Nexus WMS", font=("Segoe UI", 16, "bold"), 
+        tk.Label(logo_frame, text="📦 Almacen", font=("Segoe UI", 16, "bold"), 
                  bg=SIDEBAR_COLORS["bg"], fg="#111827").pack()
 
     def _construir_menu(self) -> None:
@@ -104,7 +104,7 @@ class Sidebar(tk.Frame):
         
         info: tk.Frame = tk.Frame(row, bg=SIDEBAR_COLORS["bg"], padx=10)
         info.pack(side="left")
-        tk.Label(info, text="Admin User", font=("Segoe UI", 9, "bold"), bg=SIDEBAR_COLORS["bg"]).pack(anchor="w")
+        tk.Label(info, text="Admin Usuario", font=("Segoe UI", 9, "bold"), bg=SIDEBAR_COLORS["bg"]).pack(anchor="w")
         
         # Botón Logout
         logout_btn = tk.Label(row, text="🚪", font=("Arial", 12), bg=SIDEBAR_COLORS["bg"], 

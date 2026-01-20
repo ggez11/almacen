@@ -20,7 +20,7 @@ class MainApp:
         self.current_frame: Optional[tk.Widget] = None
         
         self.root.geometry("1280x720")
-        self.root.title("Nexus WMS")
+        self.root.title("Almacen")
         
         self.inv_manager: InventoryManager = InventoryManager()
         self.current_user_id: int = 1

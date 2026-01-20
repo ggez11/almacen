@@ -81,7 +81,7 @@ class InventarioView(tk.Frame):
                   cursor="hand2", command=self.busqueda_sku_rapida).pack(side="right", padx=(5, 0))
 
         # Botón para nuevo producto
-        tk.Button(top_frame, text="＋ Add Product", bg=COLORS["primary"], fg="white", 
+        tk.Button(top_frame, text="＋ Agregar Producto", bg=COLORS["primary"], fg="white", 
                   font=("Segoe UI", 10, "bold"), relief="flat", padx=15, pady=5, 
                   cursor="hand2", command=self.abrir_modal_nuevo_producto).pack(side="right")
 
